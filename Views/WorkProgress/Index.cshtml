@@ -1,0 +1,241 @@
+@{ Layout = "_Layout"; }
+
+<div class="app-container">
+    <div class="app-header">
+        <i class="bi bi-grid-3x3-gap-fill"></i>
+        <span>Work Progress</span>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="scan-row">
+                <div class="scan-input-wrap">
+                    <input type="text" id="barcodeInput" class="form-control" placeholder="สแกนหรือกรอก QR Code..." autocomplete="off" />
+                    <button class="btn-scan" id="btnScan" title="ค้นหา">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+                <button class="btn-cam-icon" id="btnCameraScan" title="สแกน QR Code">
+                    <i class="bi bi-qr-code-scan"></i>
+                </button>
+            </div>
+            <div id="scannerContainer" style="display:none">
+                <div id="barcodeReader"></div>
+                <button class="btn-stop-scan" id="btnStopScan">
+                    <i class="bi bi-x-lg"></i> ปิดกล้อง
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="order-info" id="orderInfo">
+        <div class="card">
+            <div class="card-body compact">
+                <div class="info-row-main">
+                    <div class="info-main">
+                        <div class="info-label">Order No</div>
+                        <div class="info-value-lg" id="infoOrno">-</div>
+                    </div>
+                    <div class="info-main">
+                        <div class="info-label">ลายพรม</div>
+                        <div class="info-value-lg" id="infoDesign">-</div>
+                    </div>
+                </div>
+                <div class="info-grid-compact">
+                    <div class="info-cell">
+                        <span class="info-label">Barcode</span>
+                        <span class="info-val" id="infoBarcode">-</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-label">ประเภท</span>
+                        <span class="info-val" id="infoType">-</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-label">ผ้า</span>
+                        <span class="info-val" id="infoCnv">-</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-label">ขนาด</span>
+                        <span class="info-val" id="infoSize">-</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-label">ตร.ม.</span>
+                        <span class="info-val" id="infoSqm">-</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-label">จำนวน</span>
+                        <span class="info-val" id="infoQty">-</span>
+                    </div>
+                </div>
+
+                <div class="status-row">
+                    <span class="status-badge" id="statusBadge"></span>
+                    <span class="last-updated" id="lastUpdated"></span>
+                </div>
+
+                <div class="progress-summary" id="progressRings">
+                    <div class="progress-ring-card normal">
+                        <div class="progress-ring-wrap">
+                            <svg viewBox="0 0 36 36">
+                                <circle class="progress-ring-bg" cx="18" cy="18" r="15.5" />
+                                <circle class="progress-ring-fill" id="ringNormal" cx="18" cy="18" r="15.5" stroke-dasharray="0 97.4" />
+                            </svg>
+                            <div class="progress-ring-value" id="cumNormal">0%</div>
+                        </div>
+                        <div class="progress-ring-label">ปกติ</div>
+                    </div>
+                    <div class="progress-ring-card ot">
+                        <div class="progress-ring-wrap">
+                            <svg viewBox="0 0 36 36">
+                                <circle class="progress-ring-bg" cx="18" cy="18" r="15.5" />
+                                <circle class="progress-ring-fill" id="ringOt" cx="18" cy="18" r="15.5" stroke-dasharray="0 97.4" />
+                            </svg>
+                            <div class="progress-ring-value" id="cumOt">0%</div>
+                        </div>
+                        <div class="progress-ring-label">OT</div>
+                    </div>
+                    <div class="progress-ring-card total">
+                        <div class="progress-ring-wrap">
+                            <svg viewBox="0 0 36 36">
+                                <circle class="progress-ring-bg" cx="18" cy="18" r="15.5" />
+                                <circle class="progress-ring-fill" id="ringTotal" cx="18" cy="18" r="15.5" stroke-dasharray="0 97.4" />
+                            </svg>
+                            <div class="progress-ring-value" id="cumTotal">0%</div>
+                        </div>
+                        <div class="progress-ring-label">รวม</div>
+                    </div>
+                </div>
+
+                <div class="btn-group-custom">
+                    <button class="btn-outline" id="btnHistory">
+                        <i class="bi bi-clock-history"></i> ประวัติ
+                    </button>
+                    <button class="btn-outline primary" id="btnUpdate">
+                        <i class="bi bi-camera"></i> อัพเดท
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="historyModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-clock-history"></i> ประวัติความคืบหน้า</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="date-filter" id="dateFilter" style="display:none">
+                    <div class="date-filter-scroll" id="dateFilterChips"></div>
+                </div>
+                <div class="history-timeline" id="historyBody"></div>
+                <div class="no-data" id="noHistory" style="display:none">ยังไม่มีประวัติ</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-camera"></i> อัพเดทความคืบหน้า</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="uploadButtons" class="upload-btn-group">
+                    <button class="upload-option" id="btnTakePhoto">
+                        <i class="bi bi-camera-fill"></i>
+                        <span>ถ่ายรูป</span>
+                    </button>
+                    <button class="upload-option" id="btnChooseFile">
+                        <i class="bi bi-image"></i>
+                        <span>เลือกรูป</span>
+                    </button>
+                </div>
+                <input type="file" id="fileGalleryInput" accept="image/*" style="display:none" />
+
+                <div class="result-fields" id="resultFields" style="display:none">
+                    <div class="result-layout">
+                        <div class="result-img-col">
+                            <div id="uploadPreview" class="upload-preview">
+                                <img id="previewImg" src="" onclick="viewImage(this.src)" style="cursor:pointer" />
+                                <button class="btn-retake" id="btnRetake"><i class="bi bi-arrow-counterclockwise"></i></button>
+                            </div>
+                        </div>
+                        <div class="result-data-col">
+                            <div class="result-field normal">
+                                <label>ปกติ</label>
+                                <div class="result-input-wrap">
+                                    <input type="number" id="resNormal" step="0.01" min="0" max="100" value="0" />
+                                    <span class="unit">%</span>
+                                </div>
+                            </div>
+                            <div class="result-field ot">
+                                <label>OT</label>
+                                <div class="result-input-wrap">
+                                    <input type="number" id="resOt" step="0.01" min="0" max="100" value="0" />
+                                    <span class="unit">%</span>
+                                </div>
+                            </div>
+                            <div class="result-field total-field">
+                                <label>รวม</label>
+                                <div class="result-input-wrap">
+                                    <input type="number" id="resTotal" step="0.01" min="0" max="100" value="0" readonly />
+                                    <span class="unit">%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <textarea class="note-input" id="noteInput" rows="1" placeholder="บันทึกเพิ่มเติม (ถ้ามี)"></textarea>
+                    <button class="btn-save" id="btnSave">
+                        <i class="bi bi-check-circle"></i> บันทึก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="imageViewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background:transparent;border:none;box-shadow:none">
+            <div class="text-center">
+                <img id="imageViewFull" src="" style="max-width:100%;max-height:80vh;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.3)" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+        <div class="confirm-icon" id="confirmIcon">
+            <i class="bi bi-trash3"></i>
+        </div>
+        <div class="confirm-title" id="confirmTitle">ต้องการลบรายการนี้?</div>
+        <div class="confirm-desc" id="confirmDesc">ข้อมูลที่ลบจะไม่สามารถกู้คืนได้</div>
+        <div class="confirm-actions">
+            <button class="confirm-btn cancel" id="confirmCancel">ยกเลิก</button>
+            <button class="confirm-btn ok" id="confirmOk">ลบเลย</button>
+        </div>
+    </div>
+</div>
+
+<div class="camera-fullscreen" id="cameraLive" style="display:none">
+    <video id="cameraVideo" autoplay playsinline></video>
+    <canvas id="cameraCanvas" style="display:none"></canvas>
+    <div class="camera-controls">
+        <button class="btn-capture" id="btnCapture"><i class="bi bi-circle-fill"></i></button>
+        <button class="btn-close-cam" id="btnCloseCam"><i class="bi bi-x-lg"></i></button>
+    </div>
+</div>
+
+<div class="confetti-container" id="confettiContainer"></div>
+<div class="toast-container" id="toastContainer"></div>
+
+@section Scripts {
+<script src="~/js/app.js"></script>
+}
