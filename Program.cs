@@ -11,6 +11,7 @@ if (!string.IsNullOrEmpty(dbConn))
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<DbService>();
 builder.Services.AddSingleton<ColorAnalysisService>();
+builder.Services.AddSingleton<TemplateMaskService>();
 
 var app = builder.Build();
 

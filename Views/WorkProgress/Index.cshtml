@@ -83,6 +83,7 @@
                             <div class="progress-ring-value" id="cumNormal">0%</div>
                         </div>
                         <div class="progress-ring-label">ปกติ</div>
+                        <div class="daily-delta same" id="deltaNormal">0%</div>
                     </div>
                     <div class="progress-ring-card ot">
                         <div class="progress-ring-wrap">
@@ -93,6 +94,7 @@
                             <div class="progress-ring-value" id="cumOt">0%</div>
                         </div>
                         <div class="progress-ring-label">OT</div>
+                        <div class="daily-delta same" id="deltaOt">0%</div>
                     </div>
                     <div class="progress-ring-card total">
                         <div class="progress-ring-wrap">
@@ -103,6 +105,7 @@
                             <div class="progress-ring-value" id="cumTotal">0%</div>
                         </div>
                         <div class="progress-ring-label">รวม</div>
+                        <div class="daily-delta same" id="deltaTotal">0%</div>
                     </div>
                 </div>
 
@@ -112,6 +115,14 @@
                     </button>
                     <button class="btn-outline primary" id="btnUpdate">
                         <i class="bi bi-camera"></i> อัพเดท
+                    </button>
+                </div>
+                <div class="settings-btn-row">
+                    <button class="btn-outline color-settings-btn" id="btnColorSettings" style="display:none">
+                        <i class="bi bi-palette"></i> ตั้งค่าสี
+                    </button>
+                    <button class="btn-outline template-btn" id="btnTemplateSettings" style="display:none">
+                        <i class="bi bi-grid-3x3"></i> Template
                     </button>
                 </div>
             </div>
@@ -128,8 +139,14 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="date-filter" id="dateFilter" style="display:none">
-                    <div class="date-filter-scroll" id="dateFilterChips"></div>
+                <div class="history-filter" id="historyFilter" style="display:none">
+                    <div class="filter-row">
+                        <input type="date" class="filter-date-input" id="filterDateInput" />
+                        <button class="filter-reset-btn" id="filterResetBtn">
+                            <i class="bi bi-arrow-counterclockwise"></i> ทั้งหมด
+                        </button>
+                    </div>
+                    <div class="filter-info" id="filterInfo"></div>
                 </div>
                 <div class="history-timeline" id="historyBody"></div>
                 <div class="no-data" id="noHistory" style="display:none">ยังไม่มีประวัติ</div>
@@ -190,6 +207,10 @@
                             </div>
                         </div>
                     </div>
+                    <div class="date-input-row">
+                        <label for="recordDate"><i class="bi bi-calendar-event"></i> วันที่บันทึก</label>
+                        <input type="date" id="recordDate" class="form-control date-input" />
+                    </div>
                     <textarea class="note-input" id="noteInput" rows="1" placeholder="บันทึกเพิ่มเติม (ถ้ามี)"></textarea>
                     <button class="btn-save" id="btnSave">
                         <i class="bi bi-check-circle"></i> บันทึก
@@ -205,6 +226,63 @@
         <div class="modal-content" style="background:transparent;border:none;box-shadow:none">
             <div class="text-center">
                 <img id="imageViewFull" src="" style="max-width:100%;max-height:80vh;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.3)" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="colorSettingsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-palette"></i> ตั้งค่าสี</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="color-section normal-section">
+                    <div class="color-section-header">
+                        <span class="color-section-label normal">
+                            <i class="bi bi-circle-fill"></i> ปกติ (Normal)
+                        </span>
+                    </div>
+                    <div class="color-swatch-list" id="normalSwatches"></div>
+                    <button class="btn-add-color" data-group="normal">
+                        <i class="bi bi-plus-circle"></i> เพิ่มสี
+                    </button>
+                </div>
+
+                <div class="color-section ot-section">
+                    <div class="color-section-header">
+                        <span class="color-section-label ot">
+                            <i class="bi bi-circle-fill"></i> OT
+                        </span>
+                    </div>
+                    <div class="color-swatch-list" id="otSwatches"></div>
+                    <button class="btn-add-color" data-group="ot">
+                        <i class="bi bi-plus-circle"></i> เพิ่มสี
+                    </button>
+                </div>
+
+                <div class="tolerance-section">
+                    <div class="tolerance-header">
+                        <span class="tolerance-label">ความคลาดเคลื่อน (Tolerance)</span>
+                        <span class="tolerance-value" id="toleranceValue">30</span>
+                    </div>
+                    <input type="range" class="tolerance-slider" id="toleranceSlider" min="0" max="100" value="30" />
+                    <div class="tolerance-hints">
+                        <span>เข้มงวด</span>
+                        <span>ยืดหยุ่น</span>
+                    </div>
+                </div>
+
+                <div class="color-settings-actions">
+                    <button class="btn-save" id="btnSaveColorProfile">
+                        <i class="bi bi-check-circle"></i> บันทึกการตั้งค่า
+                    </button>
+                    <button class="btn-reset-color" id="btnResetColorProfile">
+                        <i class="bi bi-arrow-counterclockwise"></i> ใช้ค่าเริ่มต้น
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -227,9 +305,93 @@
 <div class="camera-fullscreen" id="cameraLive" style="display:none">
     <video id="cameraVideo" autoplay playsinline></video>
     <canvas id="cameraCanvas" style="display:none"></canvas>
+    <div class="camera-guide-overlay">
+        <div class="camera-guide-frame">
+            <div class="guide-corner tl"></div>
+            <div class="guide-corner tr"></div>
+            <div class="guide-corner bl"></div>
+            <div class="guide-corner br"></div>
+        </div>
+        <div class="camera-guide-text">จัดวางแผนงานให้อยู่ในกรอบ</div>
+    </div>
     <div class="camera-controls">
         <button class="btn-capture" id="btnCapture"><i class="bi bi-circle-fill"></i></button>
         <button class="btn-close-cam" id="btnCloseCam"><i class="bi bi-x-lg"></i></button>
+    </div>
+</div>
+
+<div class="color-picker-overlay" id="colorPickerOverlay">
+    <div class="color-picker-panel">
+        <div class="picker-header">
+            <span class="picker-title">เลือกสี</span>
+            <button class="picker-close" id="pickerClose"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="picker-preview-row">
+            <div class="picker-preview-circle" id="pickerPreview"></div>
+            <input type="text" class="picker-hex-input" id="pickerHexInput" maxlength="7" placeholder="#000000" />
+        </div>
+        <div class="picker-palette" id="pickerPalette"></div>
+        <div class="picker-custom-row">
+            <label class="picker-custom-btn">
+                <i class="bi bi-eyedropper"></i> เลือกสีเอง
+                <input type="color" id="pickerNativeInput" value="#000000" />
+            </label>
+        </div>
+        <button class="picker-confirm" id="pickerConfirm">
+            <i class="bi bi-check-lg"></i> ยืนยัน
+        </button>
+    </div>
+</div>
+
+<div class="modal fade" id="templateModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-grid-3x3"></i> Template PaintableMask</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="templateStatus" style="display:none">
+                    <div class="template-info-card">
+                        <div class="template-preview-row">
+                            <div class="template-preview-item">
+                                <div class="template-preview-label">Template</div>
+                                <img id="templatePreviewImg" src="" class="template-preview-img" />
+                            </div>
+                            <div class="template-preview-item">
+                                <div class="template-preview-label">PaintableMask</div>
+                                <img id="templatePreviewMask" src="" class="template-preview-img" />
+                            </div>
+                        </div>
+                        <div class="template-meta">
+                            <span id="templatePixelInfo"></span>
+                        </div>
+                    </div>
+                    <button class="btn-reset-color" id="btnDeleteTemplate">
+                        <i class="bi bi-trash3"></i> ลบ Template
+                    </button>
+                </div>
+                <div id="templateUpload">
+                    <p class="template-desc">อัพโหลดรูปพรมที่ยังไม่ระบาย เพื่อใช้เป็น Template คำนวณเปอร์เซ็นต์</p>
+                    <div class="upload-btn-group">
+                        <button class="upload-option" id="btnTemplateTakePhoto">
+                            <i class="bi bi-camera-fill"></i>
+                            <span>ถ่ายรูป</span>
+                        </button>
+                        <button class="upload-option" id="btnTemplateChooseFile">
+                            <i class="bi bi-image"></i>
+                            <span>เลือกรูป</span>
+                        </button>
+                    </div>
+                    <input type="file" id="templateFileInput" accept="image/*" style="display:none" />
+                </div>
+                <div id="templateProcessing" style="display:none">
+                    <div class="template-processing-msg">
+                        <span class="inline-spinner"></span> กำลังสร้าง PaintableMask...
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
